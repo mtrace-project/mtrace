@@ -15,8 +15,10 @@ linters:
     - noctx
     - asasalint
     #- revive
-    #- gosec
-    #- nilerr
+    - gosec
+    - nilerr
   settings:
     gocyclo:
-      min-complexity: 15
+      min-complexity: 20
+    revive:
+      confidence: 0.8

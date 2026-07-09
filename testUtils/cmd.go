@@ -17,7 +17,7 @@ func SetupMockExecutable(t *testing.T, cmdName string, scriptContent string) (st
 	t.Helper()
 	tmpDir := t.TempDir()
 	binDir := filepath.Join(tmpDir, "bin")
-	if err := os.MkdirAll(binDir, 0o755); err != nil {
+	if err := os.MkdirAll(binDir, 0o755); err != nil { // nolint:gosec
 		t.Fatalf("failed to create bin dir: %v", err)
 	}
 
@@ -37,7 +37,7 @@ fi
 `
 	}
 
-	if err := os.WriteFile(scriptPath, []byte(scriptContent), 0o755); err != nil {
+	if err := os.WriteFile(scriptPath, []byte(scriptContent), 0o755); err != nil { // nolint:gosec
 		t.Fatalf("failed to write mock script: %v", err)
 	}
 

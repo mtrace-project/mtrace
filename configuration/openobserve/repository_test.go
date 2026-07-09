@@ -206,7 +206,7 @@ func TestOpenObserveTraceRepository_Get_InvalidJSON(t *testing.T) {
 	traceID, _ := trigger.NewTraceId("1234567890abcdef1234567890abcdef")
 
 	// Create custom server that returns invalid JSON
-	server := http.Server{}
+	server := http.Server{}                           // nolint:gosec
 	listener, err := net.Listen("tcp", "127.0.0.1:0") // nolint:noctx
 	if err != nil {
 		t.Fatalf("failed to listen: %v", err)

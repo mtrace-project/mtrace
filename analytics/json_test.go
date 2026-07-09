@@ -99,7 +99,7 @@ func TestJSONAnalyticsExporter_Export_Success(t *testing.T) {
 	}
 
 	fullPath := filepath.Join(tempDir, filename)
-	data, err := os.ReadFile(fullPath)
+	data, err := os.ReadFile(fullPath) // nolint:gosec
 	if err != nil {
 		t.Fatalf("failed to read generated json file: %v", err)
 	}

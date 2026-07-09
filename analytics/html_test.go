@@ -93,7 +93,7 @@ func TestHTMLAnalyticsExporter_Export_Success(t *testing.T) {
 	}
 
 	fullPath := filepath.Join(tempDir, filename)
-	data, err := os.ReadFile(fullPath)
+	data, err := os.ReadFile(fullPath) // nolint:gosec
 	if err != nil {
 		t.Fatalf("failed to read generated html file: %v", err)
 	}
@@ -197,7 +197,7 @@ func TestHTMLAnalyticsExporter_Export_MultiSuite(t *testing.T) {
 		t.Fatalf("expected no error, got: %v", err)
 	}
 
-	data, err := os.ReadFile(filepath.Join(tempDir, "multi.html"))
+	data, err := os.ReadFile(filepath.Join(tempDir, "multi.html")) // nolint:gosec
 	if err != nil {
 		t.Fatalf("failed to read generated html: %v", err)
 	}

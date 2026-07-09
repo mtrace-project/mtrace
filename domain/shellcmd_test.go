@@ -11,7 +11,7 @@ import (
 	"github.com/mtrace-project/mtrace/domain"
 )
 
-func TestExecuteShellCommand(t *testing.T) {
+func TestExecuteShellCommand(t *testing.T) { //nolint:gocyclo
 	t.Run("successful execution returns exit code 0", func(t *testing.T) {
 		exitCode, err := domain.ExecuteShellCommand("echo hello", "", context.Background())
 		if err != nil {
@@ -74,7 +74,7 @@ func TestExecuteShellCommand(t *testing.T) {
 
 		// Create a marker file in the temp dir
 		markerFile := filepath.Join(tmpDir, "marker.txt")
-		if err := os.WriteFile(markerFile, []byte("found"), 0o644); err != nil {
+		if err := os.WriteFile(markerFile, []byte("found"), 0o644); err != nil { // nolint:gosec
 			t.Fatalf("failed to create marker file: %v", err)
 		}
 

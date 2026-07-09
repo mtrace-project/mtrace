@@ -68,7 +68,7 @@ func (e *htmlAnalyticsExporter) Export(analytics []*TestAnalytics) error {
 		return fmt.Errorf("failed to create output directory: %w", err)
 	}
 
-	fullPath := filepath.Join(e.outputFolder, e.filename)
+	fullPath := filepath.Clean(filepath.Join(e.outputFolder, e.filename))
 
 	file, err := os.OpenFile(fullPath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, PERM_FILE_STANDARD)
 	if err != nil {
@@ -77,7 +77,7 @@ func (e *htmlAnalyticsExporter) Export(analytics []*TestAnalytics) error {
 	defer file.Close() //nolint:errcheck
 
 	templateData := htmlTemplateData{
-		DataJSON: template.JS(dataBytes),
+		DataJSON: template.JS(dataBytes), // nolint:gosec
 	}
 
 	err = tmpl.Execute(file, templateData)

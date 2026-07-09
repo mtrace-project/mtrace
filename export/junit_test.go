@@ -42,7 +42,7 @@ func TestJunitExporter_Export(t *testing.T) {
 		t.Fatalf("expected file %s to be created", expectedPath)
 	}
 
-	data, err := os.ReadFile(expectedPath)
+	data, err := os.ReadFile(expectedPath) // nolint:gosec
 	if err != nil {
 		t.Fatalf("unexpected error reading file: %v", err)
 	}

@@ -108,7 +108,7 @@ lastSpan:
 
 	formattedContent := fmt.Sprintf(templateContent, testName, triggerExample)
 
-	err = os.WriteFile(testFilePath, []byte(formattedContent), 0o644)
+	err = os.WriteFile(testFilePath, []byte(formattedContent), 0o600)
 	if err != nil {
 		slog.Error("Error creating test case file", "error", err)
 		return

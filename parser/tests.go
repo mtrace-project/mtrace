@@ -27,7 +27,7 @@ func ParseTests(filePaths []string) ([]*TestDTO, error) {
 }
 
 func parseTest(filePath string) (*TestDTO, error) {
-	file, err := os.Open(filePath)
+	file, err := os.Open(filePath) // nolint:gosec
 	if err != nil {
 		return nil, fmt.Errorf("error opening file '%s': %w", filePath, err)
 	}

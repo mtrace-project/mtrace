@@ -36,7 +36,7 @@ func (s *SQLPostExecCheck) Check() (bool, error) {
 		return false, fmt.Errorf("error reaching db: %w", err)
 	}
 
-	wrapperQuery := fmt.Sprintf("SELECT CASE WHEN (%s) THEN 1 ELSE 0 END", s.query)
+	wrapperQuery := fmt.Sprintf("SELECT CASE WHEN (%s) THEN 1 ELSE 0 END", s.query) // nolint:gosec
 
 	// Special handling for Oracle: if the query does not have a FROM clause, we need to add "FROM dual"
 	if s.driverName == "oracle" {

@@ -55,7 +55,7 @@ func TestCreateTestCase_Success(t *testing.T) {
 		t.Fatalf("Expected test file to be created at %s, but it was not", expectedPath)
 	}
 
-	content, err := os.ReadFile(expectedPath)
+	content, err := os.ReadFile(expectedPath) // nolint:gosec
 	if err != nil {
 		t.Fatalf("failed to read created test file: %v", err)
 	}
@@ -83,7 +83,7 @@ func TestCreateTestCase_AlreadyExists(t *testing.T) {
 	existingFilePath := filepath.Join(tempDir, testName+".mt.yaml")
 
 	// Pre-create the file
-	err = os.WriteFile(existingFilePath, []byte("existing"), 0o644)
+	err = os.WriteFile(existingFilePath, []byte("existing"), 0o644) // nolint:gosec
 	if err != nil {
 		t.Fatalf("failed to write existing file: %v", err)
 	}
@@ -130,7 +130,7 @@ func TestCreateTestCase_DifferentTriggerTypes(t *testing.T) {
 				t.Fatalf("Expected file to exist: %s", expectedPath)
 			}
 
-			content, err := os.ReadFile(expectedPath)
+			content, err := os.ReadFile(expectedPath) // nolint:gosec
 			if err != nil {
 				t.Fatalf("failed to read file: %v", err)
 			}

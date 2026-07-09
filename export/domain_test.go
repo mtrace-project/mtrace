@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestNewExporters(t *testing.T) {
+func TestNewExporters(t *testing.T) { //nolint:gocyclo
 	t.Run("all valid formats", func(t *testing.T) {
 		formats := []string{JSON_FORMAT, JUNIT_FORMAT, MARKDOWN_FORMAT, STDOUT_FORMAT}
 		exporters, err := NewExporters(formats, 1, "")

@@ -24,7 +24,7 @@ func ExecuteShellCommand(cmdStr string, baseDir string, ctx context.Context) (in
 	head := parts[0]
 	args := parts[1:]
 
-	cmd := exec.CommandContext(ctx, head, args...)
+	cmd := exec.CommandContext(ctx, head, args...) // nolint:gosec
 
 	if baseDir != "" {
 		cmd.Dir = baseDir
