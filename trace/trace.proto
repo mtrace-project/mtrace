@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package mtrace.trace;
+
+option go_package = "gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/trace";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+import "span/span.proto";
+
+message TraceProto {
+  string                          trace_id    = 1;
+  google.protobuf.Timestamp       start_time  = 2;
+  google.protobuf.Timestamp       end_time    = 3;
+  google.protobuf.Duration        duration    = 4;
+  int32                           span_count  = 5;
+  int32                           error_count = 6;
+  repeated .mtrace.span.SpanProto spans       = 7;
+}

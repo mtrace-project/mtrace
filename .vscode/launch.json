@@ -1,0 +1,32 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run trial test",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": [
+                "run",
+                "testGrpc.mt.yaml",
+                "-d",
+                "trialTests",
+                "-D",
+            ]
+        },
+        {
+            "name": "Run create test",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": [
+                "create",
+                "template",
+                "-t",
+                "http",
+            ]
+        }
+    ]
+}

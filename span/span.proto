@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package mtrace.span;
+
+option go_package = "gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/span";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/struct.proto";
+
+message SpanProto {
+  string                    span_id        = 1;
+  string                    parent_id      = 2;
+  string                    service_name   = 3;
+  string                    operation_name = 4;
+  string                    span_kind      = 5;
+  string                    span_status    = 6;
+  google.protobuf.Timestamp start_time     = 7;
+  google.protobuf.Timestamp end_time       = 8;
+  google.protobuf.Duration  duration       = 9;
+  map<string, google.protobuf.Value> attributes = 10;
+}

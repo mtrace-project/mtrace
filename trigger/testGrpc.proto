@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package dice;
+
+option go_package = "grpcServer/dice;dice";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+
+message RollRequest {
+  string                    rollerName   = 1;
+  google.protobuf.Timestamp rollTime     = 2;
+  google.protobuf.Duration  rollDuration = 3;
+}
+
+message RollResponse {
+  string status = 1;
+}
+
+service DiceService {
+  rpc RollDice(RollRequest) returns (RollResponse);
+}

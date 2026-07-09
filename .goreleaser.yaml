@@ -1,0 +1,121 @@
+# This is an example .goreleaser.yml file with some sensible defaults.
+# Make sure to check the documentation at https://goreleaser.com
+
+# The lines below are called `modelines`. See `:help modeline`
+# Feel free to remove those if you don't want/need to use them.
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+# vim: set ts=2 sw=2 tw=0 fo=cnqoj
+
+version: 2
+
+project_name: mtrace
+
+git:
+  tag_sort: semver
+
+before:
+  hooks:
+    - go mod tidy -diff
+    - go mod download
+    - go run main.go gendocs 
+
+builds:
+  - id: mtrace-darwin
+    env:
+      - CGO_ENABLED=0
+    ldflags:
+      - -s -w -X gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/cmd.version={{.Version}}
+    goos:
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+
+  - id: mtrace-linux
+    env:
+      - CGO_ENABLED=0
+    ldflags:
+      - -s -w -X gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/cmd.version={{.Version}}
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm64
+
+  - id: mtrace-windows
+    env:
+      - CGO_ENABLED=0
+    ldflags:
+      - -s -w -X gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/cmd.version={{.Version}}
+    goos:
+      - windows
+    goarch:
+      - amd64
+      - arm64
+
+#upx:
+ # - enabled: true
+  #  goos: [linux]
+   # goarch: [arm64, amd64]
+    #compress: best
+    #brute: false
+
+  #- enabled: true
+   # goos: [windows]
+    #goarch: [amd64]
+    #compress: best
+    #brute: false
+
+gomod:
+  proxy: false
+
+
+archives:
+  - formats: [zip]
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- .Version }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    format_overrides:
+      - goos: linux
+        formats: [tar.zst]
+    files:
+      - src: "man/*"
+        dst: "man"
+
+gitlab_urls:
+  api: https://gitlab.m31.com/api/v4/
+  download: https://gitlab.m31.com
+
+report_sizes: true
+
+signs:
+  - artifacts: checksum
+    args:
+      - "--batch"
+      - "--no-tty"
+      - "--pinentry-mode"
+      - "loopback"
+      - "--passphrase"
+      - "{{ .Env.GPG_PASSPHRASE }}"
+      - "--output"
+      - "${signature}"
+      - "--detach-sign"
+      - "${artifact}"
+
+changelog:
+  sort: desc
+  filters:
+    exclude: # exludes commits starting with "X:"
+      - "^docs" # documentation
+      - "^test" # tests
+      - "^chore" # small fixes or changes
+      - "^ci" # ci/cd
+      - "^refactor" # refactoring
+      - "^style" # code style
+      - "^perf" # performance improvements
+      - "^build" # build system changes
+      - "^revert" # reverts

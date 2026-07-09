@@ -1,0 +1,9 @@
+*.mt.yaml
+*.out
+mtrace.yaml
+trialTests/
+public/
+*exports
+# Added by goreleaser init:
+dist/
+man/

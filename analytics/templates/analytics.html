@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mtrace — Analytics Report</title>
+    <style>
+        /* ── CSS Custom Properties ── */
+        :root {
+            --primary: #99351C;
+            --primary-light: #b8503a;
+            --primary-dark: #7a2a16;
+            --primary-bg: #fdf5f3;
+            --text: #1a1a1a;
+            --text-secondary: #555;
+            --bg: #fafafa;
+            --card-bg: #fff;
+            --border: #e5e5e5;
+            --border-light: #f0f0f0;
+            --success: #2d7a3a;
+            --danger: #c0392b;
+            --radius: 6px;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* ── Reset & Base ── */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        /* ── Header ── */
+        .header {
+            background: var(--primary);
+            color: #fff;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-title {
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .suite-select {
+            padding: 6px 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: var(--radius);
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            font-size: 13px;
+            font-family: var(--font);
+            cursor: pointer;
+            outline: none;
+            transition: background 0.2s;
+        }
+
+        .suite-select:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .suite-select option {
+            color: var(--text);
+            background: var(--card-bg);
+        }
+
+        .header-timestamp {
+            margin-left: auto;
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        /* ── Content ── */
+        .content {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px 24px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--primary);
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid var(--primary-bg);
+        }
+
+        /* ── Stat Cards ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 12px 14px;
+            box-shadow: var(--shadow);
+            transition: border-color 0.2s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--primary-light);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-unit {
+            font-size: 11px;
+            font-weight: 400;
+            color: var(--text-secondary);
+        }
+
+        /* ── Charts ── */
+        .chart-full {
+            margin-bottom: 16px;
+        }
+
+        .charts-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .chart-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .chart-card h3 {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        /* ── Span Table ── */
+        .table-wrap {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+            margin-bottom: 24px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            background: var(--primary-bg);
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 10px 12px;
+            text-align: left;
+            position: sticky;
+            top: 0;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 8px 12px;
+            border-top: 1px solid var(--border-light);
+            white-space: nowrap;
+        }
+
+        tbody tr:hover {
+            background: var(--primary-bg);
+        }
+
+        /* ── Traces ── */
+        .trace-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 8px;
+            box-shadow: var(--shadow);
+        }
+
+        .trace-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.15s;
+        }
+
+        .trace-header:hover {
+            background: var(--primary-bg);
+        }
+
+        .trace-toggle {
+            font-size: 10px;
+            color: var(--text-secondary);
+            transition: transform 0.2s;
+            flex-shrink: 0;
+        }
+
+        .trace-toggle.open {
+            transform: rotate(90deg);
+        }
+
+        .trace-id {
+            font-family: "SF Mono", "Menlo", "Monaco", monospace;
+            font-size: 12px;
+            color: var(--primary);
+        }
+
+        .trace-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-left: auto;
+            display: flex;
+            gap: 14px;
+        }
+
+        .trace-spans {
+            display: none;
+            padding: 0 14px 10px;
+        }
+
+        .trace-spans.open {
+            display: block;
+        }
+
+        .span-row {
+            display: grid;
+            grid-template-columns: 120px 1fr 80px 70px 60px;
+            gap: 8px;
+            padding: 5px 8px;
+            font-size: 12px;
+            border-radius: 3px;
+        }
+
+        .span-row:nth-child(even) {
+            background: var(--border-light);
+        }
+
+        .span-row-header {
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .error-badge {
+            display: inline-block;
+            background: var(--danger);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 1px 6px;
+            border-radius: 3px;
+        }
+
+        .ok-badge {
+            display: inline-block;
+            color: var(--success);
+            font-size: 11px;
+        }
+
+        .no-data {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 40px 20px;
+            font-size: 14px;
+        }
+
+        /* ── SVG Chart Styles ── */
+        .chart-svg {
+            width: 100%;
+            display: block;
+        }
+
+        .chart-bar {
+            transition: opacity 0.15s;
+        }
+
+        .chart-bar:hover {
+            opacity: 0.8;
+        }
+
+        .chart-label {
+            font-family: var(--font);
+            fill: var(--text-secondary);
+            font-size: 11px;
+        }
+
+        .chart-value {
+            font-family: var(--font);
+            fill: var(--text);
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .chart-axis {
+            stroke: var(--border);
+            stroke-width: 1;
+        }
+
+        .chart-grid {
+            stroke: var(--border-light);
+            stroke-width: 1;
+        }
+
+        .chart-line {
+            fill: none;
+            stroke: var(--primary);
+            stroke-width: 2;
+        }
+
+        .chart-dot {
+            fill: var(--primary);
+            transition: r 0.15s;
+            cursor: default;
+        }
+
+        .chart-dot:hover {
+            r: 5;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 700px) {
+            .charts-row {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .header {
+                flex-wrap: wrap;
+            }
+
+            .header-timestamp {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-title">mtrace</div>
+        <select id="suite-select" class="suite-select" aria-label="Select test suite"></select>
+        <div class="header-timestamp" id="timestamp"></div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content" id="content">
+        <div class="no-data">No analytics data available.</div>
+    </div>
+
+    <!-- Data injection point for Go template -->
+    <script id="analytics-data" type="application/json">
+        {{.DataJSON}}
+    </script>
+
+    <script>
+        /* ================================================================
+         *  mtrace Analytics Report — Client-side Rendering
+         * ================================================================
+         *  Structure:
+         *    1. Data & State
+         *    2. Initialization
+         *    3. Page Rendering
+         *    4. Stat Cards
+         *    5. SVG Charts
+         *    6. Span Analytics Table
+         *    7. Traces List
+         *    8. Utility Helpers
+         * ================================================================ */
+
+        // ── 1. Data & State ──────────────────────────────────────────────
+
+        var DATA = [];
+        var currentIndex = 0;
+
+        // ── 2. Initialization ────────────────────────────────────────────
+
+        function init() {
+            var raw = document.getElementById("analytics-data").textContent;
+            try {
+                DATA = JSON.parse(raw);
+            } catch (e) {
+                DATA = [];
+            }
+
+            if (!DATA || DATA.length === 0) {
+                return;
+            }
+
+            populateSuiteSelect();
+            renderSuite(0);
+        }
+
+        /**
+         * Populates the suite dropdown with test names.
+         */
+        function populateSuiteSelect() {
+            var select = document.getElementById("suite-select");
+            DATA.forEach(function (suite, i) {
+                var opt = document.createElement("option");
+                opt.value = i;
+                opt.textContent = suite.testName;
+                select.appendChild(opt);
+            });
+
+            select.addEventListener("change", function () {
+                currentIndex = parseInt(this.value, 10);
+                renderSuite(currentIndex);
+            });
+        }
+
+        // ── 3. Page Rendering ────────────────────────────────────────────
+
+        /**
+         * Renders the full page content for a given suite index.
+         */
+        function renderSuite(index) {
+            var suite = DATA[index];
+            if (!suite) { return; }
+
+            document.getElementById("timestamp").textContent = suite.timestamp || "";
+
+            var ta = suite.traceAnalytics;
+            var html = "";
+
+            // Stat cards
+            html += renderSectionTitle("Trace Metrics");
+            html += renderStatCards(ta);
+
+            // Charts
+            html += renderSectionTitle("Charts");
+
+            // Full-width run durations chart (above the other two)
+            if (suite.traces && suite.traces.length > 1) {
+                html += '<div class="chart-full"><div class="chart-card"><h3>Duration per Run</h3><div id="chart-runs"></div></div></div>';
+            }
+
+            html += '<div class="charts-row">';
+            html += '<div class="chart-card"><h3>Duration Percentiles</h3><div id="chart-duration"></div></div>';
+            html += '<div class="chart-card"><h3>Span Count vs Error Count</h3><div id="chart-errors"></div></div>';
+            html += '</div>';
+
+            // Span analytics table
+            if (ta.spanAnalytics && ta.spanAnalytics.length > 0) {
+                html += renderSectionTitle("Span Analytics");
+                html += renderSpanTable(ta.spanAnalytics);
+            }
+
+            // Traces
+            if (suite.traces && suite.traces.length > 0) {
+                html += renderSectionTitle("Traces (" + suite.traces.length + ")");
+                html += renderTraces(suite.traces);
+            }
+
+            document.getElementById("content").innerHTML = html;
+
+            // Render SVG charts after DOM is updated
+            if (suite.traces && suite.traces.length > 1) {
+                renderRunDurationsChart(suite.traces);
+            }
+            renderDurationChart(ta);
+            renderErrorChart(ta);
+
+            // Bind trace toggle events
+            bindTraceToggles();
+        }
+
+        /**
+         * Creates a section title element.
+         */
+        function renderSectionTitle(text) {
+            return '<div class="section-title">' + escapeHTML(text) + '</div>';
+        }
+
+        // ── 4. Stat Cards ────────────────────────────────────────────────
+
+        /**
+         * Renders the grid of statistic cards for trace analytics.
+         */
+        function renderStatCards(ta) {
+            var durationFields = [
+                { label: "Min Duration", ms: ta.minDuration },
+                { label: "Max Duration", ms: ta.maxDuration },
+                { label: "Avg Duration", ms: ta.averageDuration },
+                { label: "P50 Duration", ms: ta.p50Duration },
+                { label: "P90 Duration", ms: ta.p90Duration },
+                { label: "P99 Duration", ms: ta.p99Duration },
+                { label: "Std Deviation", ms: ta.durationStandardDeviation }
+            ];
+
+            var html = '<div class="stats-grid">';
+
+            // Duration cards — use smart formatting
+            durationFields.forEach(function (f) {
+                html += '<div class="stat-card">';
+                html += '<div class="stat-label">' + escapeHTML(f.label) + '</div>';
+                html += '<div class="stat-value">' + escapeHTML(formatDuration(f.ms)) + '</div>';
+                html += '</div>';
+            });
+
+            // Non-duration cards
+            var otherCards = [
+                { label: "Avg Span Count", value: formatFloat(ta.averageSpanCount), unit: "" },
+                { label: "Avg Span Errors", value: formatFloat(ta.averageSpanErrorCount), unit: "" },
+                { label: "Error Rate", value: formatFloat(ta.errorRate), unit: "%" }
+            ];
+            otherCards.forEach(function (c) {
+                html += '<div class="stat-card">';
+                html += '<div class="stat-label">' + escapeHTML(c.label) + '</div>';
+                html += '<div class="stat-value">' + escapeHTML(String(c.value));
+                if (c.unit) { html += ' <span class="stat-unit">' + escapeHTML(c.unit) + '</span>'; }
+                html += '</div></div>';
+            });
+
+            html += '</div>';
+            return html;
+        }
+
+        // ── 5. SVG Charts ────────────────────────────────────────────────
+
+        /**
+         * Renders a horizontal bar chart of duration percentiles into #chart-duration.
+         */
+        function renderDurationChart(ta) {
+            var container = document.getElementById("chart-duration");
+            if (!container) { return; }
+
+            var items = [
+                { label: "Min", ms: ta.minDuration },
+                { label: "P50", ms: ta.p50Duration },
+                { label: "Avg", ms: ta.averageDuration },
+                { label: "P90", ms: ta.p90Duration },
+                { label: "P99", ms: ta.p99Duration },
+                { label: "Max", ms: ta.maxDuration }
+            ];
+
+            container.innerHTML = buildDurationBarChart(items, "#99351C");
+        }
+
+        /**
+         * Renders a bar chart comparing average span count vs error count into #chart-errors.
+         */
+        function renderErrorChart(ta) {
+            var container = document.getElementById("chart-errors");
+            if (!container) { return; }
+
+            var items = [
+                { label: "Avg Spans", value: Math.round(ta.averageSpanCount * 100) / 100 },
+                { label: "Avg Errors", value: Math.round(ta.averageSpanErrorCount * 100) / 100 }
+            ];
+
+            container.innerHTML = buildHorizontalBarChart(items, "#c0392b");
+        }
+
+        /**
+         * Renders a Cartesian line+dot chart of trace durations per run into #chart-runs.
+         *
+         * @param {Array<{duration: number}>} traces - Array of trace objects with duration in ms.
+         */
+        function renderRunDurationsChart(traces) {
+            var container = document.getElementById("chart-runs");
+            if (!container) { return; }
+
+            var durations = traces.map(function (t) { return t.duration; });
+            var n = durations.length;
+            if (n === 0) { return; }
+
+            // Layout
+            var svgWidth = 900;
+            var svgHeight = 200;
+            var padLeft = 70;
+            var padRight = 20;
+            var padTop = 16;
+            var padBottom = 30;
+            var plotW = svgWidth - padLeft - padRight;
+            var plotH = svgHeight - padTop - padBottom;
+
+            var maxMs = Math.max.apply(null, durations);
+            var minMs = Math.min.apply(null, durations);
+            if (maxMs === minMs) { maxMs = minMs + 1; }
+
+            /**
+             * Maps a run index to an X pixel coordinate.
+             */
+            function xOf(i) {
+                return padLeft + (n === 1 ? plotW / 2 : (i / (n - 1)) * plotW);
+            }
+
+            /**
+             * Maps a duration (ms) to a Y pixel coordinate.
+             */
+            function yOf(ms) {
+                return padTop + plotH - ((ms - minMs) / (maxMs - minMs)) * plotH;
+            }
+
+            var svg = '<svg class="chart-svg" viewBox="0 0 ' + svgWidth + ' ' + svgHeight + '" preserveAspectRatio="xMidYMid meet">';
+
+            // Horizontal grid lines (5 ticks)
+            var ticks = 5;
+            for (var t = 0; t <= ticks; t++) {
+                var tickMs = minMs + (maxMs - minMs) * (t / ticks);
+                var ty = yOf(tickMs);
+                svg += '<line class="chart-grid" x1="' + padLeft + '" y1="' + ty + '" x2="' + (svgWidth - padRight) + '" y2="' + ty + '"/>';
+                svg += '<text class="chart-label" x="' + (padLeft - 6) + '" y="' + (ty + 4) + '" text-anchor="end">' + escapeHTML(formatDuration(tickMs)) + '</text>';
+            }
+
+            // Axes
+            svg += '<line class="chart-axis" x1="' + padLeft + '" y1="' + padTop + '" x2="' + padLeft + '" y2="' + (padTop + plotH) + '"/>';
+            svg += '<line class="chart-axis" x1="' + padLeft + '" y1="' + (padTop + plotH) + '" x2="' + (svgWidth - padRight) + '" y2="' + (padTop + plotH) + '"/>';
+
+            // Line path
+            var pathParts = [];
+            durations.forEach(function (ms, i) {
+                pathParts.push((i === 0 ? 'M' : 'L') + xOf(i).toFixed(1) + ',' + yOf(ms).toFixed(1));
+            });
+            svg += '<path class="chart-line" d="' + pathParts.join(' ') + '"/>';
+
+            // Dots + X labels
+            durations.forEach(function (ms, i) {
+                var cx = xOf(i);
+                var cy = yOf(ms);
+                svg += '<circle class="chart-dot" cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="3.5">';
+                svg += '<title>Run ' + (i + 1) + ': ' + formatDuration(ms) + '</title>';
+                svg += '</circle>';
+
+                // X-axis label (run number)
+                svg += '<text class="chart-label" x="' + cx.toFixed(1) + '" y="' + (padTop + plotH + 16) + '" text-anchor="middle">' + (i + 1) + '</text>';
+            });
+
+            svg += '</svg>';
+            container.innerHTML = svg;
+        }
+
+        /**
+         * Builds SVG markup for a horizontal bar chart.
+         *
+         * @param {Array<{label: string, value: number}>} items - Data points.
+         * @param {string} barColor - Fill color for bars.
+         * @returns {string} SVG markup string.
+         */
+        function buildHorizontalBarChart(items, barColor) {
+            var barHeight = 24;
+            var gap = 8;
+            var labelWidth = 65;
+            var valueWidth = 80;
+            var chartLeft = labelWidth + 8;
+            var chartRight = 30;
+            var svgWidth = 450;
+            var chartWidth = svgWidth - chartLeft - chartRight - valueWidth;
+            var svgHeight = items.length * (barHeight + gap) + gap;
+
+            var maxVal = 0;
+            items.forEach(function (item) {
+                if (item.value > maxVal) { maxVal = item.value; }
+            });
+            if (maxVal === 0) { maxVal = 1; }
+
+            var svg = '<svg class="chart-svg" viewBox="0 0 ' + svgWidth + ' ' + svgHeight + '" preserveAspectRatio="xMidYMid meet">';
+
+            // Axis line
+            svg += '<line class="chart-axis" x1="' + chartLeft + '" y1="0" x2="' + chartLeft + '" y2="' + svgHeight + '"/>';
+
+            items.forEach(function (item, i) {
+                var y = gap + i * (barHeight + gap);
+                var barW = Math.max(1, (item.value / maxVal) * chartWidth);
+
+                // Label
+                svg += '<text class="chart-label" x="' + (labelWidth) + '" y="' + (y + barHeight / 2 + 4) + '" text-anchor="end">' + escapeHTML(item.label) + '</text>';
+
+                // Bar
+                svg += '<rect class="chart-bar" x="' + chartLeft + '" y="' + y + '" width="' + barW + '" height="' + barHeight + '" rx="3" fill="' + barColor + '" opacity="0.85"/>';
+
+                // Value
+                svg += '<text class="chart-value" x="' + (chartLeft + barW + 6) + '" y="' + (y + barHeight / 2 + 4) + '">' + item.value + '</text>';
+            });
+
+            svg += '</svg>';
+            return svg;
+        }
+
+        /**
+         * Builds a horizontal bar chart specifically for duration values.
+         * Uses formatDuration for the value labels and keeps raw ms for bar width scaling.
+         *
+         * @param {Array<{label: string, ms: number}>} items - Data points with ms values.
+         * @param {string} barColor - Fill color for bars.
+         * @returns {string} SVG markup string.
+         */
+        function buildDurationBarChart(items, barColor) {
+            var barHeight = 24;
+            var gap = 8;
+            var labelWidth = 65;
+            var valueWidth = 80;
+            var chartLeft = labelWidth + 8;
+            var chartRight = 30;
+            var svgWidth = 450;
+            var chartWidth = svgWidth - chartLeft - chartRight - valueWidth;
+            var svgHeight = items.length * (barHeight + gap) + gap;
+
+            var maxMs = 0;
+            items.forEach(function (item) {
+                if (item.ms > maxMs) { maxMs = item.ms; }
+            });
+            if (maxMs === 0) { maxMs = 1; }
+
+            var svg = '<svg class="chart-svg" viewBox="0 0 ' + svgWidth + ' ' + svgHeight + '" preserveAspectRatio="xMidYMid meet">';
+            svg += '<line class="chart-axis" x1="' + chartLeft + '" y1="0" x2="' + chartLeft + '" y2="' + svgHeight + '"/>';
+
+            items.forEach(function (item, i) {
+                var y = gap + i * (barHeight + gap);
+                var barW = Math.max(1, (item.ms / maxMs) * chartWidth);
+
+                svg += '<text class="chart-label" x="' + labelWidth + '" y="' + (y + barHeight / 2 + 4) + '" text-anchor="end">' + escapeHTML(item.label) + '</text>';
+                svg += '<rect class="chart-bar" x="' + chartLeft + '" y="' + y + '" width="' + barW + '" height="' + barHeight + '" rx="3" fill="' + barColor + '" opacity="0.85"/>';
+                svg += '<text class="chart-value" x="' + (chartLeft + barW + 6) + '" y="' + (y + barHeight / 2 + 4) + '">' + escapeHTML(formatDuration(item.ms)) + '</text>';
+            });
+
+            svg += '</svg>';
+            return svg;
+        }
+
+        // ── 6. Span Analytics Table ──────────────────────────────────────
+
+        /**
+         * Renders the span analytics data as an HTML table.
+         */
+        function renderSpanTable(spans) {
+            var html = '<div class="table-wrap"><table>';
+            html += '<thead><tr>';
+            html += '<th>Service</th><th>Operation</th>';
+            html += '<th>Min</th><th>P50</th><th>P90</th><th>P99</th><th>Max</th>';
+            html += '<th>Avg</th><th>Std Dev</th>';
+            html += '<th>Error Rate</th><th>% of Trace</th>';
+            html += '</tr></thead><tbody>';
+
+            spans.forEach(function (s) {
+                html += '<tr>';
+                html += '<td>' + escapeHTML(s.serviceName) + '</td>';
+                html += '<td>' + escapeHTML(s.operationName) + '</td>';
+                html += '<td>' + escapeHTML(formatDuration(s.minDuration)) + '</td>';
+                html += '<td>' + escapeHTML(formatDuration(s.p50Duration)) + '</td>';
+                html += '<td>' + escapeHTML(formatDuration(s.p90Duration)) + '</td>';
+                html += '<td>' + escapeHTML(formatDuration(s.p99Duration)) + '</td>';
+                html += '<td>' + escapeHTML(formatDuration(s.maxDuration)) + '</td>';
+                html += '<td>' + escapeHTML(formatDuration(s.averageDuration)) + '</td>';
+                html += '<td>' + escapeHTML(formatDuration(s.durationStandardDeviation)) + '</td>';
+                html += '<td>' + formatFloat(s.errorRate) + '%</td>';
+                html += '<td>' + formatFloat(s.averagePercentageOfTotalTrace) + '%</td>';
+                html += '</tr>';
+            });
+
+            html += '</tbody></table></div>';
+            return html;
+        }
+
+        // ── 7. Traces List ───────────────────────────────────────────────
+
+        /**
+         * Renders collapsible trace items with their spans.
+         */
+        function renderTraces(traces) {
+            var html = '';
+            traces.forEach(function (t, i) {
+                html += '<div class="trace-item">';
+
+                // Trace header
+                html += '<div class="trace-header" data-trace-index="' + i + '">';
+                html += '<span class="trace-toggle" id="toggle-' + i + '">&#9654;</span>';
+                html += '<span class="trace-id">' + escapeHTML(t.traceId) + '</span>';
+                html += '<span class="trace-meta">';
+                html += '<span>' + escapeHTML(formatDuration(t.duration)) + '</span>';
+                html += '<span>' + t.spanCount + ' spans</span>';
+                if (t.errorCount > 0) {
+                    html += '<span class="error-badge">' + t.errorCount + ' errors</span>';
+                } else {
+                    html += '<span class="ok-badge">✓ no errors</span>';
+                }
+                html += '</span>';
+                html += '</div>';
+
+                // Span details (hidden by default)
+                html += '<div class="trace-spans" id="spans-' + i + '">';
+                html += '<div class="span-row span-row-header">';
+                html += '<span>Service</span><span>Operation</span><span>Kind</span><span>Status</span><span>Duration</span>';
+                html += '</div>';
+
+                if (t.spans) {
+                    t.spans.forEach(function (s) {
+                        html += '<div class="span-row">';
+                        html += '<span>' + escapeHTML(s.serviceName) + '</span>';
+                        html += '<span>' + escapeHTML(s.operationName) + '</span>';
+                        html += '<span>' + escapeHTML(s.spanKind) + '</span>';
+                        html += '<span>' + formatStatus(s.spanStatus) + '</span>';
+                        html += '<span>' + escapeHTML(formatDuration(s.duration)) + '</span>';
+                        html += '</div>';
+                    });
+                }
+
+                html += '</div>';
+                html += '</div>';
+            });
+            return html;
+        }
+
+        /**
+         * Binds click handlers to trace headers for expand/collapse.
+         */
+        function bindTraceToggles() {
+            var headers = document.querySelectorAll(".trace-header");
+            headers.forEach(function (header) {
+                header.addEventListener("click", function () {
+                    var idx = this.getAttribute("data-trace-index");
+                    var spans = document.getElementById("spans-" + idx);
+                    var toggle = document.getElementById("toggle-" + idx);
+                    if (spans.classList.contains("open")) {
+                        spans.classList.remove("open");
+                        toggle.classList.remove("open");
+                    } else {
+                        spans.classList.add("open");
+                        toggle.classList.add("open");
+                    }
+                });
+            });
+        }
+
+        // ── 8. Utility Helpers ───────────────────────────────────────────
+
+        /**
+         * Formats a duration in milliseconds using Grafana-style decomposition.
+         * Shows the two most significant non-zero units for readability.
+         *
+         * Examples:
+         *   10        → "10ms"
+         *   1000      → "1s"
+         *   1321      → "1s 321ms"
+         *   60000     → "1min"
+         *   64321     → "1min 4s"
+         *   3600000   → "1h"
+         *   3661000   → "1h 1min"
+         *   90061000  → "1d 1h"
+         *
+         * @param {number} ms - Duration in milliseconds.
+         * @returns {string} Human-readable duration string.
+         */
+        function formatDuration(ms) {
+            if (ms === undefined || ms === null || ms === 0) {
+                return "0ms";
+            }
+
+            var abs = Math.abs(ms);
+            var prefix = ms < 0 ? "-" : "";
+
+            var days = Math.floor(abs / 86400000);
+            var hours = Math.floor((abs % 86400000) / 3600000);
+            var minutes = Math.floor((abs % 3600000) / 60000);
+            var seconds = Math.floor((abs % 60000) / 1000);
+            var millis = Math.round(abs % 1000);
+
+            // Collect non-zero parts with their unit labels
+            var parts = [];
+            if (days > 0) { parts.push(days + "d"); }
+            if (hours > 0) { parts.push(hours + "h"); }
+            if (minutes > 0) { parts.push(minutes + "min"); }
+            if (seconds > 0) { parts.push(seconds + "s"); }
+            if (millis > 0) { parts.push(millis + "ms"); }
+
+            if (parts.length === 0) {
+                return "0ms";
+            }
+
+            // Show at most the two most significant units
+            return prefix + parts.slice(0, 2).join(" ");
+        }
+
+        /**
+         * Formats a float to 2 decimal places.
+         */
+        function formatFloat(val) {
+            if (val === undefined || val === null) { return "0"; }
+            return parseFloat(val.toFixed(2)).toString();
+        }
+
+        /**
+         * Escapes HTML special characters to prevent injection.
+         */
+        function escapeHTML(str) {
+            if (!str) { return ""; }
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
+        }
+
+        /**
+         * Formats a span status with a badge for errors.
+         */
+        function formatStatus(status) {
+            if (!status) { return ""; }
+            if (status.toLowerCase() === "error") {
+                return '<span class="error-badge">error</span>';
+            }
+            return escapeHTML(status);
+        }
+
+        // ── Bootstrap ────────────────────────────────────────────────────
+
+        document.addEventListener("DOMContentLoaded", init);
+    </script>
+</body>
+
+</html>
