@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package mtrace.trace;
 
-option go_package = "gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/trace";
+option go_package = "github.com/mtrace-project/mtrace/trace";
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/duration.proto";

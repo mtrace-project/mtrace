@@ -1,5 +1,7 @@
 {
     "cSpell.words": [
+        "gofumpt",
+        "golangci",
         "goreleaser"
     ],
     "conventionalCommits.scopes": [

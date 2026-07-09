@@ -105,7 +105,3 @@ changelog:
       - "^perf" # performance improvements
       - "^build" # build system changes
       - "^revert" # reverts
-
-slsa:
-  - artifacts: archive
-    id: "archive-provenance"

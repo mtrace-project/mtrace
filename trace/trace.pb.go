@@ -132,7 +132,7 @@ const file_trace_trace_proto_rawDesc = "" +
 	"span_count\x18\x05 \x01(\x05R\tspanCount\x12\x1f\n" +
 	"\verror_count\x18\x06 \x01(\x05R\n" +
 	"errorCount\x12,\n" +
-	"\x05spans\x18\a \x03(\v2\x16.mtrace.span.SpanProtoR\x05spansBDZBgithub.com/mtrace-project/mtrace/traceb\x06proto3"
+	"\x05spans\x18\a \x03(\v2\x16.mtrace.span.SpanProtoR\x05spansB(Z&github.com/mtrace-project/mtrace/traceb\x06proto3"
 
 var (
 	file_trace_trace_proto_rawDescOnce sync.Once
