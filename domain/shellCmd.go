@@ -18,7 +18,7 @@ func ExecuteShellCommand(cmdStr string, baseDir string, ctx context.Context) (in
 
 	parts, err := shlex.Split(cmdStr)
 	if err != nil {
-		return 1, fmt.Errorf("error parsing command '%s': %v", cmdStr, err)
+		return 1, fmt.Errorf("error parsing command '%s': %w", cmdStr, err)
 	}
 
 	head := parts[0]
@@ -33,7 +33,7 @@ func ExecuteShellCommand(cmdStr string, baseDir string, ctx context.Context) (in
 	output, err := cmd.CombinedOutput()
 	exitCode := cmd.ProcessState.ExitCode()
 	if err != nil {
-		return exitCode, fmt.Errorf("error executing command '%s': %v. Error details: %s", cmdStr, err, string(output))
+		return exitCode, fmt.Errorf("error executing command '%s': %w. Error details: %s", cmdStr, err, string(output))
 	}
 
 	slog.Info("Output of command executed", "command", cmdStr, "output", string(output), "exitCode", exitCode)

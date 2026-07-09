@@ -37,7 +37,7 @@ func (j *JaegerTraceAdapter) Fetch(traceId trigger.TraceId, timeout time.Duratio
 		} else {
 			tr, err = newTraceFromJaeger(response)
 			if err != nil {
-				return nil, fmt.Errorf("error converting Jaeger response to trace: %v", err)
+				return nil, fmt.Errorf("error converting Jaeger response to trace: %w", err)
 			}
 			if tr != nil {
 				actualLastSpan := tr.GetLastSpan()
@@ -148,7 +148,7 @@ func newTraceFromJaeger(response *JaegerTraceDTO) (*trace.Trace, error) {
 
 	traceId, err := trigger.NewTraceId(response.TraceId)
 	if err != nil {
-		return nil, fmt.Errorf("invalid trace ID in Jaeger response: %v", err)
+		return nil, fmt.Errorf("invalid trace ID in Jaeger response: %w", err)
 	}
 
 	return &trace.Trace{

@@ -9,7 +9,7 @@ import (
 	"github.com/mtrace-project/mtrace/trigger"
 )
 
-func TestTraceToProto_Nil(t *testing.T) {
+func TestTraceToProto_Nil(t *testing.T) { //nolint:protogetter
 	var tr *trace.Trace
 	proto := tr.ToProto()
 	if proto != nil {

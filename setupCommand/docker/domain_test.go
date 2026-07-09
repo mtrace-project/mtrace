@@ -158,7 +158,7 @@ func TestDockerHandler_Execute_DebugDisabled(t *testing.T) {
 
 	// Disable info logging for this test to ensure attach is not called
 	oldLogger := slog.Default()
-	slog.SetDefault(slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{Level: slog.LevelWarn})))
+	slog.SetDefault(slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{Level: slog.LevelWarn}))) // nolint:sloglint
 	defer slog.SetDefault(oldLogger)
 
 	executor := dockersetupcommand.NewDockerHandler(cli, "", context.Background())
@@ -236,7 +236,7 @@ func TestDockerHandler_Execute_DebugEnabled(t *testing.T) {
 
 	// Enable debug logging for this test
 	oldLogger := slog.Default()
-	slog.SetDefault(slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{Level: slog.LevelDebug})))
+	slog.SetDefault(slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{Level: slog.LevelDebug}))) // nolint:sloglint
 	defer slog.SetDefault(oldLogger)
 
 	executor := dockersetupcommand.NewDockerHandler(cli, "", context.Background())
@@ -282,7 +282,7 @@ func TestDockerHandler_Execute_ErrorCases(t *testing.T) {
 
 		// Disable info logging for this test to ensure attach is not called
 		oldLogger := slog.Default()
-		slog.SetDefault(slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{Level: slog.LevelWarn})))
+		slog.SetDefault(slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{Level: slog.LevelWarn}))) // nolint:sloglint
 		defer slog.SetDefault(oldLogger)
 
 		executor := dockersetupcommand.NewDockerHandler(cli, "", context.Background())
@@ -308,7 +308,7 @@ func TestDockerHandler_Execute_ErrorCases(t *testing.T) {
 		})
 
 		oldLogger := slog.Default()
-		slog.SetDefault(slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{Level: slog.LevelDebug})))
+		slog.SetDefault(slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{Level: slog.LevelDebug}))) // nolint:sloglint
 		defer slog.SetDefault(oldLogger)
 
 		executor := dockersetupcommand.NewDockerHandler(cli, "", context.Background())
