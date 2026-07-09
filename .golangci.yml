@@ -1,13 +1,10 @@
-version: 2
+version: "2"
 
 run:
   timeout: 5m
-  print-issued-lines: true
-  print-linter-name: true
   concurrency: 4
 
 linters:
-  disable-all: true
   enable:
     - gocyclo
     - staticcheck
@@ -20,7 +17,6 @@ linters:
     #- revive
     #- gosec
     #- nilerr
-
-linters-settings:
-  gocyclo:
-    min-complexity: 15
+  settings:
+    gocyclo:
+      min-complexity: 15
