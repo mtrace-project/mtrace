@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"runtime/debug"
 	"strings"
 	"time"
 
@@ -48,11 +49,17 @@ func Execute() {
 }
 
 func init() {
+	if Version == "v0.0.1" {
+		if info, ok := debug.ReadBuildInfo(); ok && info.Main.Version != "" && info.Main.Version != "(devel)" {
+			Version = info.Main.Version
+		}
+	}
+	rootCmd.Version = Version
+
 	rootCmd.PersistentFlags().StringVarP(&Config.Directory, "dir", "d", "", "Directory to apply the command to")
 	rootCmd.PersistentFlags().StringVarP(&ConfigFile, "config", "c", "", "Path to configuration file")
 	rootCmd.PersistentFlags().BoolVarP(&Config.Verbose, "verbose", "V", false, "Enable more verbose output for debugging purposes")
 	rootCmd.PersistentFlags().BoolVarP(&Config.Quiet, "quiet", "q", false, "Suppress result output, only show errors and warnings")
-	rootCmd.CompletionOptions.HiddenDefaultCmd = true
 }
 
 func initConfig(cmd *cobra.Command, args []string) error {

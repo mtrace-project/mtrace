@@ -114,7 +114,7 @@ homebrew_casks:
     generate_completions_from_executable:
       executable: "bin/mtrace"
       args:
-        - completions
+        - completion
       shell_parameter_format: cobra
       shells:
         - bash
