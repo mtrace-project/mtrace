@@ -57,7 +57,10 @@ gomod:
   proxy: false
 
 archives:
-  - formats: [zip]
+  - id: mtrace-darwin
+    ids:
+      - mtrace-darwin
+    formats: [zip]
     name_template: >-
       {{ .ProjectName }}_
       {{- .Version }}_
@@ -65,13 +68,96 @@ archives:
       {{- if eq .Arch "amd64" }}x86_64
       {{- else }}{{ .Arch }}{{ end }}
       {{- if .Arm }}v{{ .Arm }}{{ end }}
-    format_overrides:
-      - goos: linux
-        formats: [tar.zst]
+    files:
+      - src: "man/*"
+        dst: "man"
+
+  - id: mtrace-linux
+    ids:
+      - mtrace-linux
+    formats: [tar.zst]
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- .Version }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    files:
+      - src: "man/*"
+        dst: "man"
+
+  - id: mtrace-windows
+    ids:
+      - mtrace-windows
+    formats: [zip]
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- .Version }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
     files:
       - src: "man/*"
         dst: "man"
 report_sizes: true
+
+# Homebrew configuration
+homebrew_casks:
+  - ids:
+      - mtrace-darwin
+    manpages:
+      - man/*.1
+      - "!man/*-completion*.1"
+
+    generate_completions_from_executable:
+      executable: "bin/mtrace"
+      args:
+        - completions
+      shell_parameter_format: cobra
+      shells:
+        - bash
+        - zsh
+        - fish
+        - pwsh
+    url:
+      # URL which is determined by the given Token (github, gitlab or gitea).
+      template: "https://github.com/mtrace-project/mtrace/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+      # Used when the domains of `url` and `homepage` differ.
+      verified: "github.com/mtrace-project/mtrace"
+      # Tool's website, will become github pages
+      cookies:
+        license: "accept-backup"
+    commit_msg_template: "Brew cask update for {{ .ProjectName }} version {{ .Tag }}"
+    homepage: https://github.com/mtrace-project/mtrace
+    caveats: "🚀 Let's trace!"
+    description: >-
+      {{ .ProjectName }} is a CLI tool designed to facilitate testing through trace validation with tracing functionalities on distributed systems, released in version {{ .Tag }}.
+    skip_upload: auto
+    # Repository to push the generated files to.
+    repository:
+      owner: mtrace-project
+      name: homebrew-tap
+      branch: main
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+      pull_request:
+        enabled: true
+        draft: false
+        base:
+          owner: mtrace-project
+          name: homebrew-tap
+          branch: main    
+    commit_author:
+      name: mtrace-releaser
+      email: alessandro.dinato@gmail.com
+      signing:
+        enabled: true
+        key: "{{ .Env.GPG_SIGNING_KEY }}"
+        program: gpg
+        format: openpgp
+
+
 
 signs:
   - artifacts: checksum
