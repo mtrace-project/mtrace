@@ -10,9 +10,9 @@ import (
 	"strings"
 	"testing"
 
-	"gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/parser"
-	dockersetupcommand "gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/setupCommand/docker"
-	testutils "gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/testUtils"
+	"github.com/mtrace-project/mtrace/parser"
+	dockersetupcommand "github.com/mtrace-project/mtrace/setupCommand/docker"
+	testutils "github.com/mtrace-project/mtrace/testUtils"
 
 	"github.com/moby/moby/client"
 )
@@ -158,7 +158,7 @@ func TestDockerHandler_Execute_DebugDisabled(t *testing.T) {
 
 	// Disable info logging for this test to ensure attach is not called
 	oldLogger := slog.Default()
-	slog.SetDefault(slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{Level: slog.LevelWarn})))
+	slog.SetDefault(slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{Level: slog.LevelWarn}))) // nolint:sloglint
 	defer slog.SetDefault(oldLogger)
 
 	executor := dockersetupcommand.NewDockerHandler(cli, "", context.Background())
@@ -180,7 +180,7 @@ func TestDockerHandler_Execute_DebugEnabled(t *testing.T) {
 			calledCreate = true
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(`{"Id":"exec-123"}`)) // nolint: errcheck
+			w.Write([]byte(`{"Id":"exec-123"}`)) // nolint:errcheck,gosec
 			return
 		}
 
@@ -199,25 +199,25 @@ func TestDockerHandler_Execute_DebugEnabled(t *testing.T) {
 					return
 				}
 
-				bufrw.WriteString("HTTP/1.1 101 Switching Protocols\r\nUpgrade: tcp\r\nConnection: Upgrade\r\n\r\n") // nolint: errcheck
+				bufrw.WriteString("HTTP/1.1 101 Switching Protocols\r\nUpgrade: tcp\r\nConnection: Upgrade\r\n\r\n") // nolint:errcheck,gosec
 				// 8-byte multiplex header: stdout type 1, length 11 ("hello world")
 				header := []byte{1, 0, 0, 0, 0, 0, 0, 11}
 				payload := []byte("hello world")
-				bufrw.Write(header)  // nolint: errcheck
-				bufrw.Write(payload) // nolint: errcheck
-				bufrw.Flush()        // nolint: errcheck
+				bufrw.Write(header)  // nolint:errcheck,gosec
+				bufrw.Write(payload) // nolint:errcheck,gosec
+				bufrw.Flush()        // nolint:errcheck,gosec
 
 				if cw, ok := conn.(interface{ CloseWrite() error }); ok {
-					cw.CloseWrite() // nolint: errcheck
+					cw.CloseWrite() // nolint:errcheck,gosec
 				}
-				io.Copy(io.Discard, conn) // nolint: errcheck
-				conn.Close()              // nolint: errcheck
+				io.Copy(io.Discard, conn) // nolint:errcheck,gosec
+				conn.Close()              // nolint:errcheck,gosec
 				return
 			} else {
 				calledStart = true
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
-				w.Write([]byte("{}")) // nolint: errcheck
+				w.Write([]byte("{}")) // nolint:errcheck,gosec
 				return
 			}
 		}
@@ -236,7 +236,7 @@ func TestDockerHandler_Execute_DebugEnabled(t *testing.T) {
 
 	// Enable debug logging for this test
 	oldLogger := slog.Default()
-	slog.SetDefault(slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{Level: slog.LevelDebug})))
+	slog.SetDefault(slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{Level: slog.LevelDebug}))) // nolint:sloglint
 	defer slog.SetDefault(oldLogger)
 
 	executor := dockersetupcommand.NewDockerHandler(cli, "", context.Background())
@@ -282,7 +282,7 @@ func TestDockerHandler_Execute_ErrorCases(t *testing.T) {
 
 		// Disable info logging for this test to ensure attach is not called
 		oldLogger := slog.Default()
-		slog.SetDefault(slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{Level: slog.LevelWarn})))
+		slog.SetDefault(slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{Level: slog.LevelWarn}))) // nolint:sloglint
 		defer slog.SetDefault(oldLogger)
 
 		executor := dockersetupcommand.NewDockerHandler(cli, "", context.Background())
@@ -308,7 +308,7 @@ func TestDockerHandler_Execute_ErrorCases(t *testing.T) {
 		})
 
 		oldLogger := slog.Default()
-		slog.SetDefault(slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{Level: slog.LevelDebug})))
+		slog.SetDefault(slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{Level: slog.LevelDebug}))) // nolint:sloglint
 		defer slog.SetDefault(oldLogger)
 
 		executor := dockersetupcommand.NewDockerHandler(cli, "", context.Background())

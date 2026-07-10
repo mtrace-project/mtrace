@@ -12,7 +12,7 @@ func CreateTempYAMLFile(t *testing.T, dir string, name string, content string) s
 	t.Helper()
 
 	filePath := filepath.Join(dir, name)
-	err := os.WriteFile(filePath, []byte(content), 0o644)
+	err := os.WriteFile(filePath, []byte(content), 0o644) // nolint:gosec
 	if err != nil {
 		t.Fatalf("failed to create temp yaml file: %v", err)
 	}

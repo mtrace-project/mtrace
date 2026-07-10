@@ -1,0 +1,60 @@
+name: Code Checks
+
+on:
+  push:
+    branches:
+      - '**'
+
+env:
+  GOPRIVATE: "github.com/*"
+
+jobs:
+  style-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.26'
+
+      - name: Run style check
+        run: |
+          go install mvdan.cc/gofumpt@latest
+          export PATH=$PATH:$(go env GOPATH)/bin
+          gofumpt -l -e .
+
+  linter:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.26'
+
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v9
+        with:
+          version: v2.12.2
+          args: -v --timeout=10m -j 2
+
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.26'
+
+      - name: Run unit tests
+        run: go test -v -race ./...

@@ -11,9 +11,10 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 
-	idgenerator "gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/idGenerator"
-	"gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/parser"
+	idgenerator "github.com/mtrace-project/mtrace/idGenerator"
+	"github.com/mtrace-project/mtrace/parser"
 )
 
 const (
@@ -104,7 +105,7 @@ func (t *PlaywrightTrigger) Trigger() (TraceId, error) {
 		args = append(args, "--project", proj)
 	}
 
-	cmd := exec.CommandContext(t.ctx, "npx", args...)
+	cmd := exec.CommandContext(t.ctx, "npx", args...) // nolint:gosec
 	cmd.Dir = filepath.Join(t.baseDir, t.playwrightPath)
 	cmd.Env = append(os.Environ(), fmt.Sprintf("MTRACE_PLAYWRIGHT_SERVER_URL=%s", fmt.Sprintf("http://%s%s", srv.Addr, PLAYWRIGHT_SERVER_ENDPOINT)))
 
@@ -187,7 +188,10 @@ func (s *playwrightTraceIdServer) start(traceIdChan chan<- TraceId) (*http.Serve
 		}
 	})
 
-	srv := &http.Server{Handler: mux}
+	srv := &http.Server{
+		Handler:           mux,
+		ReadHeaderTimeout: 3 * time.Second,
+	}
 	srv.Addr = listener.Addr().String()
 
 	go func() {

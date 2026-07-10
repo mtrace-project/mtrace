@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/domain"
+	"github.com/mtrace-project/mtrace/domain"
 )
 
 const (
@@ -173,11 +173,39 @@ func (t *TriggerDTO) Validate() error {
 	return nil
 }
 
+type testValidator func(*TestDTO) error
+
 func (t *TestDTO) Validate() error {
+	validators := []testValidator{
+		validateTestName,
+		validateTestSetupCommands,
+		validateTestTrigger,
+		validateTestWaitBeforeFetch,
+		validateTestExpectedTraces,
+		validateTestExpectedProperties,
+		validateTestAssertions,
+		validateTestPostExecChecks,
+		validateTestLastSpan,
+		validateTestTimeout,
+		validateTestRetryDelay,
+	}
+
+	for _, validator := range validators {
+		if err := validator(t); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func validateTestName(t *TestDTO) error {
 	if t.Name == "" {
 		return fmt.Errorf("test name is required")
 	}
+	return nil
+}
 
+func validateTestSetupCommands(t *TestDTO) error {
 	for i, setupCmd := range t.SetupCommands {
 		if setupCmd == nil {
 			return fmt.Errorf("setup command %d cannot be nil", i+1)
@@ -186,20 +214,28 @@ func (t *TestDTO) Validate() error {
 			return fmt.Errorf("invalid setup command %d: %w", i+1, err)
 		}
 	}
+	return nil
+}
 
+func validateTestTrigger(t *TestDTO) error {
 	if t.Trigger == nil {
 		return fmt.Errorf("trigger is required")
 	}
-
 	if err := t.Trigger.Validate(); err != nil {
 		return fmt.Errorf("invalid trigger: %w", err)
 	}
+	return nil
+}
 
+func validateTestWaitBeforeFetch(t *TestDTO) error {
 	if t.WaitBeforeFetch == nil {
 		waitBeforeFetch := domain.FromTimeDuration(DEFAULT_WAIT_BEFORE_FETCH)
 		t.WaitBeforeFetch = &waitBeforeFetch
 	}
+	return nil
+}
 
+func validateTestExpectedTraces(t *TestDTO) error {
 	for i, expectedTrace := range t.ExpectedTraces {
 		if expectedTrace == nil {
 			return fmt.Errorf("expected trace %d cannot be nil", i+1)
@@ -208,13 +244,19 @@ func (t *TestDTO) Validate() error {
 			return fmt.Errorf("invalid expected trace %d: %w", i+1, err)
 		}
 	}
+	return nil
+}
 
+func validateTestExpectedProperties(t *TestDTO) error {
 	if t.ExpectedProperties != nil {
 		if err := t.ExpectedProperties.Validate(); err != nil {
 			return fmt.Errorf("invalid expected trace properties: %w", err)
 		}
 	}
+	return nil
+}
 
+func validateTestAssertions(t *TestDTO) error {
 	for i, assertion := range t.Assertions {
 		if assertion == nil {
 			return fmt.Errorf("assertion %d cannot be nil", i+1)
@@ -223,7 +265,10 @@ func (t *TestDTO) Validate() error {
 			return fmt.Errorf("invalid assertion %d: %w", i+1, err)
 		}
 	}
+	return nil
+}
 
+func validateTestPostExecChecks(t *TestDTO) error {
 	for i, postExecCheck := range t.PostExecChecks {
 		if postExecCheck == nil {
 			return fmt.Errorf("post exec check %d cannot be nil", i+1)
@@ -232,30 +277,36 @@ func (t *TestDTO) Validate() error {
 			return fmt.Errorf("invalid post exec check %d: %w", i+1, err)
 		}
 	}
+	return nil
+}
 
+func validateTestLastSpan(t *TestDTO) error {
 	if t.LastSpan != nil {
 		if err := t.LastSpan.Validate(); err != nil {
 			return fmt.Errorf("invalid expected last span: %w", err)
 		}
 	}
+	return nil
+}
 
+func validateTestTimeout(t *TestDTO) error {
 	if t.Timeout == nil {
 		timeout := domain.FromTimeDuration(DEFAULT_TIMEOUT)
 		t.Timeout = &timeout
 	}
-
 	if *t.Timeout <= 0 {
 		return fmt.Errorf("timeout has to be greater than 0")
 	}
+	return nil
+}
 
+func validateTestRetryDelay(t *TestDTO) error {
 	if t.RetryDelay == nil {
 		retryDelay := domain.FromTimeDuration(DEFAULT_RETRYDELAY)
 		t.RetryDelay = &retryDelay
 	}
-
 	if *t.RetryDelay <= 0 {
 		return fmt.Errorf("retry delay has to be greater than 0")
 	}
-
 	return nil
 }

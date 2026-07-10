@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
-	"gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/configuration/jaeger"
-	testutils "gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/testUtils"
-	"gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/trigger"
+	"github.com/mtrace-project/mtrace/configuration/jaeger"
+	testutils "github.com/mtrace-project/mtrace/testUtils"
+	"github.com/mtrace-project/mtrace/trigger"
 )
 
 func TestJaegerTraceRepository_Get_Success(t *testing.T) {
@@ -139,7 +139,7 @@ func TestJaegerTraceRepository_Get_HttpError(t *testing.T) {
 func TestJaegerTraceRepository_Get_InvalidJSON(t *testing.T) {
 	traceID, _ := trigger.NewTraceId("1234567890abcdef1234567890abcdef")
 
-	server := http.Server{}
+	server := http.Server{}                           // nolint:gosec
 	listener, err := net.Listen("tcp", "127.0.0.1:0") // nolint:noctx
 	if err != nil {
 		t.Fatalf("failed to listen: %v", err)

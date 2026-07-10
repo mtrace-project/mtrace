@@ -3,6 +3,7 @@ package testutils
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net"
 	"path/filepath"
@@ -145,7 +146,7 @@ func StartGRPCTargetServer(t *testing.T, baseDir string, protoPath string, servi
 	)
 
 	go func() {
-		if err := server.Serve(listener); err != nil && err != grpc.ErrServerStopped {
+		if err := server.Serve(listener); err != nil && !errors.Is(err, grpc.ErrServerStopped) {
 			t.Errorf("gRPC mock server error: %v", err)
 		}
 	}()

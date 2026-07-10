@@ -6,10 +6,10 @@ import (
 	"strings"
 	"time"
 
-	"gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/domain"
-	"gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/span"
-	"gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/trace"
-	"gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/trigger"
+	"github.com/mtrace-project/mtrace/domain"
+	"github.com/mtrace-project/mtrace/span"
+	"github.com/mtrace-project/mtrace/trace"
+	"github.com/mtrace-project/mtrace/trigger"
 )
 
 type JaegerTraceAdapter struct {
@@ -37,7 +37,7 @@ func (j *JaegerTraceAdapter) Fetch(traceId trigger.TraceId, timeout time.Duratio
 		} else {
 			tr, err = newTraceFromJaeger(response)
 			if err != nil {
-				return nil, fmt.Errorf("error converting Jaeger response to trace: %v", err)
+				return nil, fmt.Errorf("error converting Jaeger response to trace: %w", err)
 			}
 			if tr != nil {
 				actualLastSpan := tr.GetLastSpan()
@@ -148,7 +148,7 @@ func newTraceFromJaeger(response *JaegerTraceDTO) (*trace.Trace, error) {
 
 	traceId, err := trigger.NewTraceId(response.TraceId)
 	if err != nil {
-		return nil, fmt.Errorf("invalid trace ID in Jaeger response: %v", err)
+		return nil, fmt.Errorf("invalid trace ID in Jaeger response: %w", err)
 	}
 
 	return &trace.Trace{

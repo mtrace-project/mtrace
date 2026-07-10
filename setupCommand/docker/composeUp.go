@@ -7,7 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/parser"
+	"github.com/mtrace-project/mtrace/parser"
 )
 
 type ComposeUpCommand struct {
@@ -23,7 +23,7 @@ func getComposeUpCommand(composePath string, projectName string, ctx context.Con
 	}
 	cmds = append(cmds, "up", "-d", "--wait")
 
-	return exec.CommandContext(ctx, cmds[0], cmds[1:]...)
+	return exec.CommandContext(ctx, cmds[0], cmds[1:]...) // nolint:gosec
 }
 
 func getComposeDownCommand(composePath string, projectName string, ctx context.Context) *exec.Cmd {
@@ -32,7 +32,7 @@ func getComposeDownCommand(composePath string, projectName string, ctx context.C
 		cmds = append(cmds, "-p", projectName)
 	}
 	cmds = append(cmds, "down", "-v", "--remove-orphans")
-	return exec.CommandContext(ctx, cmds[0], cmds[1:]...)
+	return exec.CommandContext(ctx, cmds[0], cmds[1:]...) // nolint:gosec
 }
 
 func (s *ComposeUpCommand) Execute() error {

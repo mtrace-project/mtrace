@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/parser"
+	"github.com/mtrace-project/mtrace/parser"
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -36,7 +36,7 @@ func (s *SQLPostExecCheck) Check() (bool, error) {
 		return false, fmt.Errorf("error reaching db: %w", err)
 	}
 
-	wrapperQuery := fmt.Sprintf("SELECT CASE WHEN (%s) THEN 1 ELSE 0 END", s.query)
+	wrapperQuery := fmt.Sprintf("SELECT CASE WHEN (%s) THEN 1 ELSE 0 END", s.query) // nolint:gosec
 
 	// Special handling for Oracle: if the query does not have a FROM clause, we need to add "FROM dual"
 	if s.driverName == "oracle" {

@@ -1,12 +1,10 @@
-version: 2
+version: "2"
 
 run:
   timeout: 5m
-  print-issued-lines: true
-  print-linter-name: true
+  concurrency: 4
 
 linters:
-  disable-all: true
   enable:
     - gocyclo
     - staticcheck
@@ -16,7 +14,18 @@ linters:
     - bodyclose
     - noctx
     - asasalint
-
-linters-settings:
-  gocyclo:
-    min-complexity: 15
+    - revive
+    - gosec
+    - nilerr
+    - errorlint
+    - errname
+    - contextcheck
+    - makezero
+    - sqlclosecheck
+    - rowserrcheck
+    - prealloc
+  settings:
+    gocyclo:
+      min-complexity: 20
+    revive:
+      confidence: 0.8

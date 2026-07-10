@@ -8,9 +8,9 @@ import (
 	"log/slog"
 	"os"
 
-	"gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/domain"
-	"gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/export"
-	"gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/trigger"
+	"github.com/mtrace-project/mtrace/domain"
+	"github.com/mtrace-project/mtrace/export"
+	"github.com/mtrace-project/mtrace/trigger"
 
 	"github.com/spf13/cobra"
 )
@@ -108,7 +108,7 @@ lastSpan:
 
 	formattedContent := fmt.Sprintf(templateContent, testName, triggerExample)
 
-	err = os.WriteFile(testFilePath, []byte(formattedContent), 0o644)
+	err = os.WriteFile(testFilePath, []byte(formattedContent), 0o600)
 	if err != nil {
 		slog.Error("Error creating test case file", "error", err)
 		return

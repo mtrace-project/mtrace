@@ -12,8 +12,8 @@ import (
 	"strings"
 	"testing"
 
-	"gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/parser"
-	testutils "gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/testUtils"
+	"github.com/mtrace-project/mtrace/parser"
+	testutils "github.com/mtrace-project/mtrace/testUtils"
 )
 
 func TestPlaywrightTrigger_Init(t *testing.T) {
@@ -186,7 +186,7 @@ exit 0
 		t.Fatalf("unexpected error on Init: %v", err)
 	}
 
-	if err := os.MkdirAll(filepath.Join(baseDir, trigger.playwrightPath), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Join(baseDir, trigger.playwrightPath), 0o755); err != nil { // nolint:gosec
 		t.Fatalf("failed to create playwright path: %v", err)
 	}
 
@@ -227,7 +227,7 @@ exit 1
 		t.Fatalf("unexpected error on Init: %v", err)
 	}
 
-	if err := os.MkdirAll(filepath.Join(baseDir, trigger.playwrightPath), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Join(baseDir, trigger.playwrightPath), 0o755); err != nil { // nolint:gosec
 		t.Fatalf("failed to create playwright path: %v", err)
 	}
 
@@ -263,7 +263,7 @@ exit 0
 		t.Fatalf("unexpected error on Init: %v", err)
 	}
 
-	if err := os.MkdirAll(filepath.Join(baseDir, trigger.playwrightPath), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Join(baseDir, trigger.playwrightPath), 0o755); err != nil { // nolint:gosec
 		t.Fatalf("failed to create playwright path: %v", err)
 	}
 

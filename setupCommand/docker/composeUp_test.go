@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/parser"
-	dockersetupcommand "gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/setupCommand/docker"
+	"github.com/mtrace-project/mtrace/parser"
+	dockersetupcommand "github.com/mtrace-project/mtrace/setupCommand/docker"
 )
 
 func TestNewComposeUpCommand(t *testing.T) {
@@ -78,7 +78,7 @@ func setupMockDocker(t *testing.T, fail bool) (string, func()) {
 	t.Helper()
 	tmpDir := t.TempDir()
 	binDir := filepath.Join(tmpDir, "bin")
-	if err := os.MkdirAll(binDir, 0o755); err != nil {
+	if err := os.MkdirAll(binDir, 0o755); err != nil { // nolint:gosec
 		t.Fatalf("failed to create bin dir: %v", err)
 	}
 
@@ -95,21 +95,21 @@ else
   exit 0
 fi
 `
-	if err := os.WriteFile(scriptPath, []byte(scriptContent), 0o755); err != nil {
+	if err := os.WriteFile(scriptPath, []byte(scriptContent), 0o755); err != nil { // nolint:gosec
 		t.Fatalf("failed to write mock docker script: %v", err)
 	}
 
 	oldPath := os.Getenv("PATH")
 	newPath := binDir + string(filepath.ListSeparator) + oldPath
-	os.Setenv("PATH", newPath)             // nolint: errcheck
-	os.Setenv("MTRACE_TEST_FAIL", "false") // nolint: errcheck
+	os.Setenv("PATH", newPath)             // nolint:errcheck,gosec
+	os.Setenv("MTRACE_TEST_FAIL", "false") // nolint:errcheck,gosec
 	if fail {
-		os.Setenv("MTRACE_TEST_FAIL", "true") // nolint: errcheck
+		os.Setenv("MTRACE_TEST_FAIL", "true") // nolint:errcheck,gosec
 	}
 
 	cleanup := func() {
-		os.Setenv("PATH", oldPath)      // nolint: errcheck
-		os.Unsetenv("MTRACE_TEST_FAIL") // nolint: errcheck
+		os.Setenv("PATH", oldPath)      // nolint:errcheck,gosec
+		os.Unsetenv("MTRACE_TEST_FAIL") // nolint:errcheck,gosec
 	}
 
 	return logFile, cleanup
@@ -138,7 +138,7 @@ func TestComposeUpCommand_Execute(t *testing.T) {
 			t.Fatalf("unexpected execute error: %v", err)
 		}
 
-		content, err := os.ReadFile(logFile)
+		content, err := os.ReadFile(logFile) // nolint:gosec
 		if err != nil {
 			t.Fatalf("failed to read log file: %v", err)
 		}
@@ -171,7 +171,7 @@ func TestComposeUpCommand_Execute(t *testing.T) {
 			t.Fatalf("unexpected execute error: %v", err)
 		}
 
-		content, err := os.ReadFile(logFile)
+		content, err := os.ReadFile(logFile) // nolint:gosec
 		if err != nil {
 			t.Fatalf("failed to read log file: %v", err)
 		}
@@ -229,7 +229,7 @@ func TestComposeUpCommand_Cleanup(t *testing.T) {
 			t.Fatalf("unexpected cleanup error: %v", err)
 		}
 
-		content, err := os.ReadFile(logFile)
+		content, err := os.ReadFile(logFile) // nolint:gosec
 		if err != nil {
 			t.Fatalf("failed to read log file: %v", err)
 		}
@@ -262,7 +262,7 @@ func TestComposeUpCommand_Cleanup(t *testing.T) {
 			t.Fatalf("unexpected cleanup error: %v", err)
 		}
 
-		content, err := os.ReadFile(logFile)
+		content, err := os.ReadFile(logFile) // nolint:gosec
 		if err != nil {
 			t.Fatalf("failed to read log file: %v", err)
 		}

@@ -7,10 +7,10 @@ import (
 	"testing"
 	"time"
 
-	"gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/domain"
-	"gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/span"
-	"gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/trace"
-	"gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/trigger"
+	"github.com/mtrace-project/mtrace/domain"
+	"github.com/mtrace-project/mtrace/span"
+	"github.com/mtrace-project/mtrace/trace"
+	"github.com/mtrace-project/mtrace/trigger"
 )
 
 func TestJSONAnalyticsExporter_Format(t *testing.T) {
@@ -99,7 +99,7 @@ func TestJSONAnalyticsExporter_Export_Success(t *testing.T) {
 	}
 
 	fullPath := filepath.Join(tempDir, filename)
-	data, err := os.ReadFile(fullPath)
+	data, err := os.ReadFile(fullPath) // nolint:gosec
 	if err != nil {
 		t.Fatalf("failed to read generated json file: %v", err)
 	}

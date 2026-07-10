@@ -16,7 +16,7 @@ var gendocsCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		path := "./man"
 
-		if err := os.MkdirAll(path, 0o755); err != nil {
+		if err := os.MkdirAll(path, 0o750); err != nil {
 			log.Fatal(err)
 		}
 

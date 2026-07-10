@@ -1,10 +1,12 @@
 package trace
 
 import (
+	"math"
+
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/span"
+	"github.com/mtrace-project/mtrace/span"
 )
 
 func (t *Trace) ToProto() *TraceProto {
@@ -12,10 +14,24 @@ func (t *Trace) ToProto() *TraceProto {
 		return nil
 	}
 
+	var spanCount int32
+	if t.SpanCount > math.MaxInt32 {
+		spanCount = math.MaxInt32
+	} else {
+		spanCount = int32(t.SpanCount) // nolint:gosec
+	}
+
+	var errorCount int32
+	if t.ErrorCount > math.MaxInt32 {
+		errorCount = math.MaxInt32
+	} else {
+		errorCount = int32(t.ErrorCount) // nolint:gosec
+	}
+
 	protoTrace := &TraceProto{
 		TraceId:    t.TraceId.String(),
-		SpanCount:  int32(t.SpanCount),
-		ErrorCount: int32(t.ErrorCount),
+		SpanCount:  spanCount,
+		ErrorCount: errorCount,
 	}
 
 	protoTrace.StartTime = timestamppb.New(t.StartTime)

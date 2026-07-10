@@ -4,14 +4,15 @@ Copyright © 2026 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"log/slog"
 	"os"
 	"strings"
 	"time"
 
-	"gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/configuration"
-	"gitlab.m31.com/m31/academy/devops/cloud-trace-testing/mtrace/domain"
+	"github.com/mtrace-project/mtrace/configuration"
+	"github.com/mtrace-project/mtrace/domain"
 
 	"github.com/lmittmann/tint"
 	"github.com/spf13/cobra"
@@ -99,7 +100,8 @@ func initConfig(cmd *cobra.Command, args []string) error {
 	}
 
 	if err := viper.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+		var notFoundErr viper.ConfigFileNotFoundError
+		if !errors.As(err, &notFoundErr) {
 			return fmt.Errorf("error reading config file: %w", err)
 		}
 	}
