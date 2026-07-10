@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"runtime/debug"
 	"strings"
 	"time"
 
@@ -22,7 +23,7 @@ import (
 var (
 	ConfigFile string
 	Config     configuration.AppConfig
-	version    = "v0.0.1"
+	Version    = "v0.0.1"
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -31,7 +32,7 @@ var rootCmd = &cobra.Command{
 	Short: fmt.Sprintf("%s is a tool for testing thorugh trace validation", domain.CLI_NAME),
 	Long: fmt.Sprintf(`%s is a CLI tool designed to facilitate testing through trace validation. 
 	It allows users to define tests in YAML files, execute them, and validate the results against expected traces.`, domain.CLI_NAME),
-	Version:           version,
+	Version:           Version,
 	PersistentPreRunE: initConfig,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
@@ -48,11 +49,17 @@ func Execute() {
 }
 
 func init() {
+	if Version == "v0.0.1" {
+		if info, ok := debug.ReadBuildInfo(); ok && info.Main.Version != "" && info.Main.Version != "(devel)" {
+			Version = info.Main.Version
+		}
+	}
+	rootCmd.Version = Version
+
 	rootCmd.PersistentFlags().StringVarP(&Config.Directory, "dir", "d", "", "Directory to apply the command to")
 	rootCmd.PersistentFlags().StringVarP(&ConfigFile, "config", "c", "", "Path to configuration file")
 	rootCmd.PersistentFlags().BoolVarP(&Config.Verbose, "verbose", "V", false, "Enable more verbose output for debugging purposes")
 	rootCmd.PersistentFlags().BoolVarP(&Config.Quiet, "quiet", "q", false, "Suppress result output, only show errors and warnings")
-	rootCmd.CompletionOptions.HiddenDefaultCmd = true
 }
 
 func initConfig(cmd *cobra.Command, args []string) error {
