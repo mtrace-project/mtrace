@@ -22,7 +22,7 @@ import (
 var (
 	ConfigFile string
 	Config     configuration.AppConfig
-	version    = "v0.0.1"
+	Version    = "v0.0.1"
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -31,7 +31,7 @@ var rootCmd = &cobra.Command{
 	Short: fmt.Sprintf("%s is a tool for testing thorugh trace validation", domain.CLI_NAME),
 	Long: fmt.Sprintf(`%s is a CLI tool designed to facilitate testing through trace validation. 
 	It allows users to define tests in YAML files, execute them, and validate the results against expected traces.`, domain.CLI_NAME),
-	Version:           version,
+	Version:           Version,
 	PersistentPreRunE: initConfig,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
