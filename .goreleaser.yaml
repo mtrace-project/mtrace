@@ -141,13 +141,6 @@ homebrew_casks:
       name: homebrew-tap
       branch: main
       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
-      pull_request:
-        enabled: true
-        draft: false
-        base:
-          owner: mtrace-project
-          name: homebrew-tap
-          branch: main    
     commit_author:
       name: mtrace-releaser
       email: alessandro.dinato@gmail.com
