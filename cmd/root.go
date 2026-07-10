@@ -23,7 +23,7 @@ import (
 var (
 	ConfigFile string
 	Config     configuration.AppConfig
-	Version    = "v0.0.1"
+	Version    = "dev"
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -49,7 +49,7 @@ func Execute() {
 }
 
 func init() {
-	if Version == "v0.0.1" {
+	if Version == "dev" {
 		if info, ok := debug.ReadBuildInfo(); ok && info.Main.Version != "" && info.Main.Version != "(devel)" {
 			Version = info.Main.Version
 		}

@@ -140,7 +140,7 @@ homebrew_casks:
       owner: mtrace-project
       name: homebrew-tap
       branch: main
-      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+      token: "{{ .Env.PKG_PUBLISHER_GITHUB_TOKEN }}"
     commit_author:
       name: mtrace-releaser
       email: alessandro.dinato@gmail.com
@@ -149,6 +149,51 @@ homebrew_casks:
         key: "{{ .Env.GPG_SIGNING_KEY }}"
         program: gpg
         format: openpgp
+
+# Winget and Scoop configuration
+winget:
+  - name: mtrace
+    ids:
+      - mtrace-windows
+    publisher: mtrace
+    short_description: "CLI tool designed to facilitate testing through trace validation"
+    license: "AGPL-3.0"
+    publisher_url: https://github.com/mtrace-project
+    package_identifier: mtrace.mtrace
+    homepage: "https://mtrace-project.github.io"
+    description: "mtrace is a CLI tool designed to facilitate testing through trace validation with tracing functionalities on distributed systems."
+    tags:
+      - golang
+      - e2e
+      - open-telemetry
+      - otel
+      - distributed-systems
+      - cli
+      - tracing
+    repository:
+      owner: mtrace-project
+      name: winget-pkgs
+      branch: main
+      token: "{{ .Env.PKG_PUBLISHER_GITHUB_TOKEN }}"
+    commit_author:
+      name: mtrace-releaser
+      email: alessandro.dinato@gmail.com
+
+scoops:
+  - name: mtrace
+    ids:
+      - mtrace-windows
+    description: "mtrace is a CLI tool designed to facilitate testing through trace validation."
+    homepage: "https://mtrace-project.github.io"
+    license: "AGPL-3.0"
+    repository:
+      owner: mtrace-project
+      name: scoop-bucket
+      branch: main
+      token: "{{ .Env.PKG_PUBLISHER_GITHUB_TOKEN }}"
+    commit_author:
+      name: mtrace-releaser
+      email: alessandro.dinato@gmail.com
 
 release:
   github:
