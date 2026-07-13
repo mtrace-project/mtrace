@@ -1,6 +1,6 @@
 *.mt.yaml
 *.out
-mtrace.yaml
+mtracer.yaml
 trialTests/
 public/
 *exports

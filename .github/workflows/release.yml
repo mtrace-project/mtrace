@@ -51,7 +51,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: mtrace_${{ github.ref_name }}_dist
+          name: mtracer_${{ github.ref_name }}_dist
           path: |
             dist/*.zip
             dist/*.tar.zst
