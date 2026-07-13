@@ -66,7 +66,8 @@ func CreateTestCase(cmd *cobra.Command, args []string) {
 		triggerExample = trigger.Example()
 	}
 
-	templateContent := `
+	// nolint:gosec
+	templateContent := ` 
 name: "%s"
 description: "Description of the test case"
 setupCommands:
