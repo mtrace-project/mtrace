@@ -177,7 +177,8 @@ In particular, you can explore the [rollDice example](https://github.com/mtracer
 [Somsubhra-URL]: https://github.com/mtracer-project/mtracer/releases
 
 ## TODO
-- [ ] Implement support for additional observability backends
+- [ ] Assertions on analytics
+- [ ] Implement support for additional observability backends (for example Zipkin)
 - [ ] Implement variables in mtracer.yaml file in order to inject them in the tests 
 - [ ] Error rate gate on multiple runs (for instance the test succeed if >= 90% of the runs succeed)
 - [ ] Add support for more trigger types (e.g., Kafka, RabbitMQ, GraphQL)
